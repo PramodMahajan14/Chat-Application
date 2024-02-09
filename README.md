@@ -1,8 +1,8 @@
-#Project Structure
-*client - React.js Frontend
-*server - Node.js Backend
+# Project Structure
+* client - React.js Frontend
+* server - Node.js Backend
 
-#How it works
+# How it works
 *Front-End: React.js
 *Back-End: Node.js / Express.js / Socket.io
 *Authenticaion: JWT
