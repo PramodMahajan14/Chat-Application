@@ -1,0 +1,17 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore files and directories starting with a dot
+.*
+
+# Ignore build artifacts
+/build/
+/dist/
+
+# Ignore development and test files
+*.md
+
+*.test.js
