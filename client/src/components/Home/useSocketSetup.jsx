@@ -6,9 +6,20 @@ const useSocketSetup = (setfriendList) => {
   const { setUser } = useContext(AccountContext);
   useEffect(() => {
     socket.connect();
-    socket.on("friends", (friends) => {
-      console.log(friends);
-      setfriendList(friends);
+    socket.on("friends", (friendList) => {
+      console.log(friendList);
+      setfriendList(friendList);
+    });
+
+    socket.on("connected", (status, username) => {
+      setfriendList((prevFriends) => {
+        return [...prevFriends].map((friend) => {
+          if (friend.username === username) {
+            friend.connected = status;
+          }
+          return friend;
+        });
+      });
     });
     socket.on("connect_error", () => {
       console.log("connection fail");
@@ -18,7 +29,6 @@ const useSocketSetup = (setfriendList) => {
       socket.off("connect_error");
     };
   }, [setUser, setfriendList]);
-  socket.connect();
 };
 
 export default useSocketSetup;

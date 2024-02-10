@@ -42,7 +42,7 @@ const SideBar = () => {
                   w="20px"
                   h="20px"
                 />
-                <Text>{friend}</Text>
+                <Text>{friend.username}</Text>
               </HStack>
             );
           })}

@@ -35,13 +35,13 @@ const AddFriendModel = ({ isOpen, onClose }) => {
               .min(6, "Username too short !")
               .max(28, "Username too long"),
           })}
-          onSubmit={(value, action) => {
+          onSubmit={(value) => {
             socket.emit(
               "add_friend",
               value.friendName,
-              ({ errorMsg, done }) => {
+              ({ errorMsg, done, newFriend }) => {
                 if (done) {
-                  setfriendList((c) => [value.friendName, ...c]);
+                  setfriendList((c) => [newFriend, ...c]);
                   closeModal();
                   return;
                 }
