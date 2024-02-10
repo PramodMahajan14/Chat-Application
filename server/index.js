@@ -11,6 +11,7 @@ const {
 const helmet = require("helmet");
 const cors = require("cors");
 const authrouter = require("./routers/authrouter");
+const directMessages = require("./controllers/dm");
 
 const server = require("http").createServer(app);
 
@@ -41,6 +42,10 @@ io.on("connect", (socket) => {
 
   socket.on("add_friend", (friendName, cb) => {
     addFriend(socket, friendName, cb);
+  });
+
+  socket.on("dm", (message) => {
+    directMessages(socket, message);
   });
 
   socket.on("disconnecting", () => onDisconnect(socket));
