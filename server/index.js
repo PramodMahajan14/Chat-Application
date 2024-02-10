@@ -21,6 +21,7 @@ const {
   authorizerUser,
   initializeUser,
   addFriend,
+  onDisconnect,
 } = require("./controllers/socketController");
 
 app.use(helmet());
@@ -41,6 +42,8 @@ io.on("connect", (socket) => {
   socket.on("add_friend", (friendName, cb) => {
     addFriend(socket, friendName, cb);
   });
+
+  socket.on("disconnecting", () => onDisconnect(socket));
 });
 
 server.listen(process.env.SERVER_PORT, () => {
