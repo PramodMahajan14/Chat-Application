@@ -1,8 +1,12 @@
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 
-const socket = new io("http://localhost:4000", {
-  autoConnect: false,
-  withCredentials: true,
-});
+const socket = (user) =>
+  new io("http://localhost:4000", {
+    autoConnect: false,
+    withCredentials: true,
+    auth: {
+      token: user.token,
+    },
+  });
 
 export default socket;

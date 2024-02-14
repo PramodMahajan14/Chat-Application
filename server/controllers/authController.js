@@ -1,13 +1,24 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const { jwtSign, jwtVerify, getJwt } = require("../jwt/jwtAuth");
 
 module.exports.handleLogin = (req, res) => {
-  if (req.session.user && req.session.user.username) {
-    res.json({ loggedIn: true, username: req.session.user.username });
-  } else {
+  const token = getJwt(req);
+
+  if (!token) {
     res.json({ loggedIn: false });
+    return;
   }
+  jwtVerify(token, process.env.JWT_SECRET)
+    .then((token) => {
+      res.json({ loggedIn: true, token });
+    })
+    .catch((err) => {
+      res.json({ loggedIn: false });
+    });
 };
 
 module.exports.attemptLogin = async (req, res) => {
@@ -23,13 +34,24 @@ module.exports.attemptLogin = async (req, res) => {
         potentialLogin.rows[0].passhash
       );
       if (isSamePass) {
-        req.session.user = {
-          username: req.body.username,
-          id: potentialLogin.rows[0].id,
-          userid: potentialLogin.rows[0].userid,
-        };
-
-        res.json({ loggedIn: true, username: req.body.username });
+        jwtSign(
+          {
+            username: req.body.username,
+            id: potentialLogin.rows[0].id,
+            userid: potentialLogin.rows[0].userid,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "2min" }
+        )
+          .then((token) => {
+            res.json({ loggedIn: true, token });
+          })
+          .catch((err) => {
+            res.json({
+              loggedIn: false,
+              status: "Somthing went wrong, try again",
+            });
+          });
       } else {
         res.json({ loggedIn: false, status: "Wrong username or password!" });
       }
@@ -55,13 +77,24 @@ module.exports.attemptRegister = async (req, res) => {
       [req.body.username, hashedPass, uuidv4()]
     );
 
-    req.session.user = {
-      username: req.body.username,
-      id: newUserQuery.rows[0].id,
-      userid: newUserQuery.rows[0].userid,
-    };
-
-    res.json({ loggedIn: true, username: req.body.username });
+    jwtSign(
+      {
+        username: req.body.username,
+        id: newUserQuery.rows[0].id,
+        userid: newUserQuery.rows[0].userid,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "2min" }
+    )
+      .then((token) => {
+        res.json({ loggedIn: true, token });
+      })
+      .catch((err) => {
+        res.json({
+          loggedIn: false,
+          status: "Somthing went wrong, try again",
+        });
+      });
   } else {
     res.json({ loggedIn: false, status: "Username taken" });
   }

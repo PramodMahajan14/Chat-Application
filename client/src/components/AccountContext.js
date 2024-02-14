@@ -5,7 +5,10 @@ const { createContext, useState, useEffect } = require("react");
 export const AccountContext = createContext();
 
 const UserContext = ({ children }) => {
-  const [user, setUser] = useState({ loggedIn: null });
+  const [user, setUser] = useState({
+    loggedIn: null,
+    token: localStorage.getItem("token"),
+  });
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -39,6 +42,9 @@ const UserContext = ({ children }) => {
     try {
       const response = await fetch("http://localhost:4000/auth/login", {
         credentials: "include",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+        },
       });
 
       if (!response.ok) {
